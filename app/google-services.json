@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "10184383753",
+    "firebase_url": "https://myfavoriteplaces-72b55.firebaseio.com",
+    "project_id": "myfavoriteplaces-72b55",
+    "storage_bucket": "myfavoriteplaces-72b55.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10184383753:android:63658f6ca8580be5",
+        "android_client_info": {
+          "package_name": "com.example.abhi.myfavoriteplaces"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10184383753-p0obdac3ne7vpikm84e7222lhbh0junq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.abhi.myfavoriteplaces",
+            "certificate_hash": "25d398b7d3580d7fe6622e409410fec96c9853d7"
+          }
+        },
+        {
+          "client_id": "10184383753-6cjcuoo3lodmkjki5gul9fpbf4bckqi9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBepVHYopycmzf9WyyoBdqMgiKTnhkvp74"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10184383753-6cjcuoo3lodmkjki5gul9fpbf4bckqi9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
