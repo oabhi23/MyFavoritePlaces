@@ -1,6 +1,7 @@
 package com.example.abhi.myfavoriteplaces
 
 import android.app.Activity
+import android.content.Intent
 import android.nfc.Tag
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -55,8 +56,11 @@ class LoginSignUp : AppCompatActivity() {
         }
     }
 
+    /**
+     * Login existing user on fb
+     */
     private fun login(userName: String, password: String) {
-        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(password)) {
+        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(password)) { //fields cannot be empty
             mAuth!!.signInWithEmailAndPassword(userName!!, password!!)
                     .addOnCompleteListener(this) { task ->
 
@@ -66,6 +70,12 @@ class LoginSignUp : AppCompatActivity() {
 
                             usernameEditText.text.clear()
                             passwordEditText.text.clear()
+
+                            val userId = mAuth!!.currentUser!!.uid
+
+                            val intent = Intent(this, FindPlacesMap:: class.java)
+                            intent.putExtra("USERID", userId)
+                            startActivity(intent)
                         } else {
                             Toast.makeText(this@LoginSignUp, "Incorrect username or password.",
                                     Toast.LENGTH_SHORT).show()
@@ -78,8 +88,11 @@ class LoginSignUp : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sign up user on fb
+     */
     private fun signUp(userName: String, password: String) {
-        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(password)) {
+        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(password)) { //fields cannot be empty
             mAuth!!.createUserWithEmailAndPassword(userName!!, password!!)
                     .addOnCompleteListener(this) { task ->
 
@@ -101,6 +114,9 @@ class LoginSignUp : AppCompatActivity() {
         }
     }
 
+    /**
+     * Extension function, method calls findviewbyid and performs cast
+     */
     fun <T : View> Activity.bind(@IdRes res : Int) : T {
         @Suppress("UNCHECKED_CAST")
         return findViewById(res) as T
