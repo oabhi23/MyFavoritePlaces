@@ -31,6 +31,9 @@ import com.google.android.gms.maps.model.*
 import com.google.firebase.database.*
 import java.io.IOException
 
+/**
+ * Map activity allows user to save locations searched for - use of Google Maps Api, Places SDK
+ */
 class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener{
 
     //firebase
@@ -232,6 +235,7 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
         searchIcon.setOnClickListener {
             geoLocate() //find and go to location
             saveButton.visibility = View.VISIBLE //have the ability to save searched locations
+            searchText.text.clear()
         }
     }
 
