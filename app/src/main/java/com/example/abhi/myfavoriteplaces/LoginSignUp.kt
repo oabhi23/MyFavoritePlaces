@@ -2,12 +2,10 @@ package com.example.abhi.myfavoriteplaces
 
 import android.app.Activity
 import android.content.Intent
-import android.nfc.Tag
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.IdRes
+import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -71,11 +69,20 @@ class LoginSignUp : AppCompatActivity() {
                             usernameEditText.text.clear()
                             passwordEditText.text.clear()
 
-                            val userId = mAuth!!.currentUser!!.uid
+                            val user = User(mutableListOf(), "")
+                            val key = mDatabaseReference!!.child("Users").push().key
+                            user.uuid = key
+                            mDatabaseReference!!.child(key).setValue(user)
 
                             val intent = Intent(this, FindPlacesMap:: class.java)
-                            intent.putExtra("USERID", userId)
+                            intent.putExtra("USERID", key)
                             startActivity(intent)
+
+//                            val userId = mAuth!!.currentUser!!.uid
+//
+//                            val intent = Intent(this, FindPlacesMap:: class.java)
+//                            intent.putExtra("USERID", userId)
+//                            startActivity(intent)
                         } else {
                             Toast.makeText(this@LoginSignUp, "Incorrect username or password.",
                                     Toast.LENGTH_SHORT).show()
