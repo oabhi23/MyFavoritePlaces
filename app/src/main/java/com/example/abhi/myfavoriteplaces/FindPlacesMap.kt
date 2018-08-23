@@ -1,28 +1,27 @@
 package com.example.abhi.myfavoriteplaces
 
 import android.app.Activity
-import android.content.ContentProviderClient
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.support.annotation.IdRes
 import android.support.annotation.RequiresApi
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.view.KeyEvent
+import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.view.inputmethod.EditorInfo
+import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.ImageView
 import android.widget.Toast
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
-
+import com.google.android.gms.location.places.Places
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,14 +29,24 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import java.io.IOException
 
-class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback {
+class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener{
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private lateinit var mMap: GoogleMap
     private lateinit var userId : String
-    private lateinit var savedLastLocation : Location
+    private lateinit var searchIcon : ImageView
 
-    private lateinit var searchText: EditText
+    private lateinit var savedLastLocation : Location
+    private lateinit var googleApiClient: GoogleApiClient
+    private var latLngBounds = LatLngBounds(LatLng(-40.0, -168.0), LatLng(71.0, 136.0))
+
+    private lateinit var searchText: AutoCompleteTextView
     private lateinit var saveButton: Button
+
+    private lateinit var placeAutocompleteAdapter : PlaceAutocompleteAdapter
 
     private var latitude: Double=0.toDouble()
     private var longitude: Double=0.toDouble()
@@ -64,6 +73,7 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback {
         userId = intent.getStringExtra("USERID")
         searchText = this.bind(R.id.input_search)
         saveButton = this.bind(R.id.saveMarkertBtn)
+        searchIcon = this.bind(R.id.ic_magnify)
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkLocationPermission()) {
@@ -191,16 +201,29 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun searchLocation() {
-        searchText.setOnKeyListener (View.OnKeyListener(){ v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE ||
-                    event.action == KeyEvent.KEYCODE_ENTER || event.action == KeyEvent.ACTION_DOWN) {
+        googleApiClient = GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build()
 
-                geoLocate()
-                saveButton.visibility = View.VISIBLE
-                return@OnKeyListener true
-            }
-            false
-        })
+        placeAutocompleteAdapter = PlaceAutocompleteAdapter(this, googleApiClient,
+                latLngBounds, null)
+
+        searchText.setAdapter(placeAutocompleteAdapter)
+
+        searchIcon.setOnClickListener {
+            geoLocate()
+            saveButton.visibility = View.VISIBLE
+        }
+
+//        searchText.setOnKeyListener (View.OnKeyListener(){ v, actionId, event ->
+//            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE ||
+//                    event.action == KeyEvent.KEYCODE_ENTER || event.action == KeyEvent.ACTION_DOWN) {
+//
+//                geoLocate()
+//                saveButton.visibility = View.VISIBLE
+//                return@OnKeyListener true
+//            }
+//            false
+//        })
     }
 
     /**
@@ -228,15 +251,6 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback {
                 mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
             }
         }
-
-
-//        if (list.size > 0) {
-//            val address = list[0]
-//
-//            val latLng = LatLng(address.latitude, address.longitude)
-//
-//            mMap?.addMarker(MarkerOptions().position(latLng).title(address.featureName))
-//        }
     }
 
 
