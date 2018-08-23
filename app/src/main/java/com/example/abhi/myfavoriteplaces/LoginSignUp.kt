@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -26,6 +27,8 @@ class LoginSignUp : AppCompatActivity() {
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
 
+    private lateinit var key : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_signup)
@@ -39,6 +42,8 @@ class LoginSignUp : AppCompatActivity() {
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
         mAuth = FirebaseAuth.getInstance()
+
+        key = ""
 
         loginButton.setOnClickListener {
             val userName = usernameEditText?.text.toString()
@@ -69,20 +74,16 @@ class LoginSignUp : AppCompatActivity() {
                             usernameEditText.text.clear()
                             passwordEditText.text.clear()
 
-                            val user = User(mutableListOf(), "")
-                            val key = mDatabaseReference!!.child("Users").push().key
-                            user.uuid = key
-                            mDatabaseReference!!.child(key).setValue(user)
+//                            val user = User(mutableListOf(), "")
+//                            val key = mDatabaseReference!!.child("Users").push().key
+//                            user.uuid = key
+//                            mDatabaseReference!!.child(key).setValue(user)
+
+                            Log.e("thiskeykotlinandroid", " $key")
 
                             val intent = Intent(this, FindPlacesMap:: class.java)
                             intent.putExtra("USERID", key)
                             startActivity(intent)
-
-//                            val userId = mAuth!!.currentUser!!.uid
-//
-//                            val intent = Intent(this, FindPlacesMap:: class.java)
-//                            intent.putExtra("USERID", userId)
-//                            startActivity(intent)
                         } else {
                             Toast.makeText(this@LoginSignUp, "Incorrect username or password.",
                                     Toast.LENGTH_SHORT).show()
@@ -110,6 +111,12 @@ class LoginSignUp : AppCompatActivity() {
 
                             usernameEditText.text.clear()
                             passwordEditText.text.clear()
+
+                            val user = User(mutableListOf(), "")
+                            key = mDatabaseReference!!.child("Users").push().key
+                            user.uuid = key
+                            mDatabaseReference!!.child(key).setValue(user)
+
                         } else {
                             Toast.makeText(this@LoginSignUp, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show()

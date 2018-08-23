@@ -13,6 +13,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.Button
@@ -27,8 +28,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import java.io.IOException
 
 class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener{
@@ -36,6 +36,9 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
     //firebase
     private lateinit var userId : String
     private lateinit var mDatabaseReference: DatabaseReference
+
+    //saved marker list
+    private lateinit var markerList: MutableList<Place>
 
     private lateinit var mMap: GoogleMap
     private lateinit var searchIcon : ImageView
@@ -75,6 +78,7 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
 
         userId = intent.getStringExtra("USERID")
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users")
+        markerList = mutableListOf()
 
         searchText = this.bind(R.id.input_search)
         saveButton = this.bind(R.id.saveMarkertBtn)
@@ -98,6 +102,7 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
             fusedLocationProviderClient
                     .requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
         }
+        retrievePlaces()
     }
 
     /**
@@ -264,12 +269,47 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
      */
     private fun saveLocation(address: Address, latLng: LatLng) {
         saveLocationButton.setOnClickListener {
-            val placeId = mDatabaseReference.push().key
-            val newPlace = Place(address.featureName, latLng)
+            Log.e("thisuserid", "" + userId)
+            val placeId = mDatabaseReference.child(userId).child("places").push().key
+            val newPlace = Place(address.featureName, latLng.latitude, latLng.longitude)
             mDatabaseReference.child(userId).child("places").child(placeId).setValue(newPlace).addOnCompleteListener {
                 Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    /**
+     * Retrieve saved places and add markers to those saved places
+     */
+    private fun retrievePlaces() {
+        mDatabaseReference.child(userId).child("places").addValueEventListener(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+               //empty
+            }
+
+            override fun onDataChange(p0: DataSnapshot?) {
+               if (p0!!.exists()) {
+                   markerList.clear()
+
+                   for(i in p0.children) {
+                       val place : Place? = i.getValue(Place::class.java)
+                       markerList.add(place!!)
+                   }
+
+                   for (i in markerList) {
+                       val options = MarkerOptions()
+                       val latLng = LatLng(i.latitude, i.longitude)
+                       options.position(latLng)
+
+                       options.title(i.locationName)
+
+                       mMap!!.addMarker(options)
+                       mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                   }
+               }
+            }
+
+        })
     }
 
     /**
