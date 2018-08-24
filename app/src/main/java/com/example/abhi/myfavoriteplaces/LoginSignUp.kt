@@ -74,10 +74,9 @@ class LoginSignUp : AppCompatActivity() {
                             passwordEditText.text.clear()
 
                             val uid = mAuth!!.currentUser!!.uid
-//                            key = mDatabaseReference!!.child("Users").key
 
                             val intent = Intent(this, FindPlacesMap:: class.java)
-                            intent.putExtra("USERID", uid) //send user id to map activity
+                            intent.putExtra("USERID", uid) //send uid to map activity
                             startActivity(intent)
                         } else {
                             Toast.makeText(this@LoginSignUp, "Incorrect username or password.",
@@ -110,7 +109,6 @@ class LoginSignUp : AppCompatActivity() {
                             val uid : String = mAuth!!.currentUser!!.uid
                             val user = User(mutableListOf(), uid)
                             mDatabaseReference!!.child(uid).push() //add user id to db
-//                            user.uuid = key
                             mDatabaseReference!!.child(uid).setValue(user)
 
                         } else {

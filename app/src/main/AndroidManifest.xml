@@ -38,6 +38,8 @@
         <activity
             android:name=".FindPlacesMap"
             android:label="@string/title_activity_find_places_map"></activity>
+
+        <activity android:name=".Profile"></activity>
     </application>
 
 </manifest>

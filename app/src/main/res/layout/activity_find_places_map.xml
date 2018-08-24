@@ -39,7 +39,6 @@
             android:layout_marginEnd="13dp"
             android:src="@drawable/search" />
 
-
     </RelativeLayout>
 
     <fragment
@@ -62,5 +61,23 @@
             android:visibility="gone"
             android:id="@+id/saveMarkertBtn"/>
     </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/profile_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/relLayout1"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="186dp"
+        android:src="@drawable/profile_icon" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/logout_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/relLayout1"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="110dp"
+        android:src="@drawable/logout_icon" />
 
 </RelativeLayout>

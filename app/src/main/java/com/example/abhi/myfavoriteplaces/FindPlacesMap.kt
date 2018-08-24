@@ -1,6 +1,7 @@
 package com.example.abhi.myfavoriteplaces
 
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.support.annotation.IdRes
 import android.support.annotation.RequiresApi
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.io.IOException
 
@@ -40,12 +43,19 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
     private lateinit var userId : String
     private lateinit var mDatabaseReference: DatabaseReference
 
+    //auth
+    var fbAuth = FirebaseAuth.getInstance()
+
     //saved marker list
     private lateinit var markerList: MutableList<Place>
 
     private lateinit var mMap: GoogleMap
     private lateinit var searchIcon : ImageView
     private lateinit var saveLocationButton : Button
+
+    //Fab buttons
+    private lateinit var logoutButton: FloatingActionButton
+    private lateinit var profileButton: FloatingActionButton
 
     private lateinit var savedLastLocation : Location
     private lateinit var googleApiClient: GoogleApiClient
@@ -87,6 +97,8 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
         saveButton = this.bind(R.id.saveMarkertBtn)
         searchIcon = this.bind(R.id.ic_magnify)
         saveLocationButton = this.bind(R.id.saveMarkertBtn)
+        logoutButton = this.bind(R.id.logout_btn)
+        profileButton = this.bind(R.id.profile_btn)
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkLocationPermission()) {
@@ -106,6 +118,35 @@ class FindPlacesMap : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.O
                     .requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
         }
         retrievePlaces()
+
+        showProfile()
+
+        logout()
+    }
+
+    /**
+     * Log out of fb auth
+     */
+    private fun logout() {
+        logoutButton.setOnClickListener {view ->
+            fbAuth.signOut()
+
+            val intent = Intent(this, LoginSignUp:: class.java)
+            startActivity(intent) //go back to login
+            finish()
+        }
+    }
+
+    /**
+     * Go to user profile
+     */
+    private fun showProfile() {
+        profileButton.setOnClickListener {
+            val intent = Intent(this, Profile::class.java)
+            Log.e("EMAIL", fbAuth.currentUser!!.email)
+            intent.putExtra("EMAIL", fbAuth.currentUser!!.email)
+            startActivity(intent)
+        }
     }
 
     /**
